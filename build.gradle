@@ -28,7 +28,3 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.0'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = "4.10.2"
-}

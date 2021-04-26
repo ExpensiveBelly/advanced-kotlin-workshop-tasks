@@ -16,7 +16,6 @@ fun <T> continuationSteal(console: Console = Console()): Continuation<T>? = runB
     var continuation: Continuation<T>? = null
     GlobalScope.launch(Dispatchers.Unconfined) {
         console.println("Before")
-        TODO()
         console.println("After")
     }
     continuation

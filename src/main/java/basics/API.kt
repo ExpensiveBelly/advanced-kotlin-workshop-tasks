@@ -1,6 +1,8 @@
 package basics
 
+import generics.Failure
 import generics.Response
+import generics.Success
 
 class StudentController(
     val studentRepository: StudentRepository,
@@ -8,14 +10,18 @@ class StudentController(
 ) {
 
     @GetMapping("/student/{id}")
-    fun getUser(@PathVariable id: Long): StudentAPI {
-        TODO()
+    fun getUser(@PathVariable id: Long): StudentAPI = when (val response = studentRepository.findStudentResult(id)) {
+        is Failure -> throw ApiError(code = 400, message = "No user with id $id")
+        is Success -> {
+            analyticsRepository.setStudentByIdCount(id, analyticsRepository.getStudentByIdCount(id) + 1)
+            response.value.toApi()
+        }
     }
 
     @GetMapping("/student")
-    fun getUsers(): List<StudentAPI> {
-        TODO()
-    }
+    fun getUsers(): List<StudentAPI> = studentRepository.getAllStudents().map { it.toApi() }.sortedBy { it.surname }
+
+    private fun StudentEntity.toApi() = StudentAPI(name = firstName, surname = lastName)
 }
 
 data class StudentAPI(
@@ -38,7 +44,7 @@ interface StudentRepository {
     fun getAllStudents(): List<StudentEntity>
 }
 
-object NotFoundException: Throwable()
+object NotFoundException : Throwable()
 
 interface AnalyticsRepository {
 
